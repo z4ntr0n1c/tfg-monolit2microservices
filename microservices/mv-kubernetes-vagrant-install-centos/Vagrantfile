@@ -1,0 +1,40 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+##Las mv de vagrant el usuario es:
+#vagrant
+#vagrant
+#root
+#vagrant
+Vagrant.configure("2") do |config|
+
+  config.vm.box = "bento/centos-7.6"
+  config.vm.provision "ansible_local" do |ansible|
+    ansible.playbook = "playbook_centos_install_docker.yaml"
+	 config.vm.provider "virtualbox" do |vb|
+     vb.gui = false
+     vb.memory = "2048"
+	 vb.cpus = "2"
+ end 
+
+  # master
+    config.vm.define "master" do |app|
+    app.vm.hostname = "master"
+    app.vm.network "private_network", ip: "192.168.2.10"
+    #app.vm.provision "shell", path: "provision/provision-for-balancer.sh"
+	end
+
+  # worker1
+    config.vm.define "worker1" do |app|
+    app.vm.hostname = "worker1"
+    app.vm.network "private_network", ip: "192.168.2.11"
+	#app.vm.provision "shell", path: "provision/provision-for-nginx.sh"
+	end
+	
+	# worker2
+    config.vm.define "worker2" do |app|
+    app.vm.hostname = "worker2"
+    app.vm.network "private_network", ip: "192.168.2.12"
+	#app.vm.provision "shell", path: "provision/provision-for-nginx.sh"
+  end
+end
+end
