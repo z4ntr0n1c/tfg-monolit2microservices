@@ -7,17 +7,17 @@
 
   tasks:
     - name: Install yum utils
-      yum:
+      dnf:
         name: yum-utils
         state: latest
 
     - name: Install device-mapper-persistent-data
-      yum:
+      dnf:
         name: device-mapper-persistent-data
         state: latest
 
     - name: Install lvm2
-      yum:
+      dnf:
         name: lvm2
         state: latest
 

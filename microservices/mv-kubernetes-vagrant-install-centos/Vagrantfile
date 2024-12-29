@@ -7,7 +7,7 @@
 #vagrant
 Vagrant.configure("2") do |config|
 
-  config.vm.box = "bento/centos-7.6"
+  config.vm.box = "bento/centos-8"
   config.vm.provision "ansible_local" do |ansible|
     ansible.playbook = "playbook_centos_install_docker.yaml"
 	 config.vm.provider "virtualbox" do |vb|
@@ -16,24 +16,24 @@ Vagrant.configure("2") do |config|
 	 vb.cpus = "2"
  end 
 
-  # master
-    config.vm.define "master" do |app|
-    app.vm.hostname = "master"
-    app.vm.network "private_network", ip: "192.168.2.10"
+  # appmaster
+    config.vm.define "appmaster" do |app|
+    app.vm.hostname = "appmaster"
+    app.vm.network "private_network", ip: "10.0.0.20"
     #app.vm.provision "shell", path: "provision/provision-for-balancer.sh"
 	end
 
-  # worker1
-    config.vm.define "worker1" do |app|
-    app.vm.hostname = "worker1"
-    app.vm.network "private_network", ip: "192.168.2.11"
+  # appworker1
+    config.vm.define "appworker1" do |app|
+    app.vm.hostname = "appworker1"
+    app.vm.network "private_network", ip: "10.0.0.21"
 	#app.vm.provision "shell", path: "provision/provision-for-nginx.sh"
 	end
 	
-	# worker2
-    config.vm.define "worker2" do |app|
-    app.vm.hostname = "worker2"
-    app.vm.network "private_network", ip: "192.168.2.12"
+	# appworker2
+    config.vm.define "appworker2" do |app|
+    app.vm.hostname = "appworker2"
+    app.vm.network "private_network", ip: "10.0.0.22"
 	#app.vm.provision "shell", path: "provision/provision-for-nginx.sh"
   end
 end
