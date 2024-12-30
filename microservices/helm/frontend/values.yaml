@@ -1,7 +1,0 @@
-app: 
-  name: product-backend 
-image: 
-  repository: myregistry/product-backend 
-  tag: v1.2.3 
-environment: staging 
-replicaCount: 2
