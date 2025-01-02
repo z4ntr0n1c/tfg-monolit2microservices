@@ -1,2 +1,2 @@
-kubeadm join 10.0.0.10:6443 --token ejinu8.8i7vlgeh5id5joe4 \
-    --discovery-token-ca-cert-hash sha256:5178958a5a6fe53e571b596d2082ff2cb200a6c5e3e9d947f418e0b84af8a61a 
+kubeadm join 10.0.0.10:6443 --token dng8gd.w545z2l38fp3935b \
+    --discovery-token-ca-cert-hash sha256:cc48531c610f60e9c67071a91e04dde4334d8bc263a3a398948843c6f5a49f8b 
