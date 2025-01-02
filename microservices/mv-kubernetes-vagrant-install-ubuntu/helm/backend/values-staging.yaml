@@ -1,4 +1,0 @@
-environment: staging
-replicaCount: 1
-image:
-  tag: v1.2.3-staging
