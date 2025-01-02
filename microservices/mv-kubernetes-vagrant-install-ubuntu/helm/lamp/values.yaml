@@ -1,0 +1,14 @@
+apache:
+  image: httpd:2.4
+  port: 80
+
+mysql:
+  image: mysql:5.7
+  rootPassword: "Sup3rS3cr3tR00TP4$$w0rD!"
+  database: wikidb
+  user: wikiuser
+  password: "W1k1P4$w0ord."
+
+php:
+  image: php:7.4-apache
+  port: 80
