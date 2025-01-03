@@ -24,45 +24,56 @@ Aquesta guia descriu com desplegar una pila LAMP (Linux, Apache, MySQL, PHP) din
 
 ## Fitxers i configuracions
 
-### 1. **deployment.yaml**
+### **Chart.yaml**:
+
+El fitxer `Chart.yaml` és el fitxer de metadades del chart. Conté informació bàsica sobre el chart com el seu nom, versió, descripció, i dependències. Aquest fitxer és necessari per a qualsevol chart Helm i s'utilitza per identificar el chart i la seva configuració general. 
+
+### **values.yaml**
+
+El fitxer `values.yaml` és el lloc on es defineixen els valors per defecte que es poden utilitzar a tot el chart. És una manera senzilla de proporcionar configuracions personalitzades per als recursos que s'instal·len al Kubernetes. Els valors definits en aquest fitxer poden ser substituïts mitjançant arguments de la línia de comandes o mitjançant fitxers d'override quan s'instal·la o actualitza un chart. 
+
+Alguns dels camps definits:
+
+- Namespace
+- Configuracions per Apache, MySQL, PHP.
+- Opcions d'autoscaling.
+- Configuració d'Ingress i més.
+
+### **deployment.yaml**
 Aquest fitxer conté els `Deployments` per als components Apache, MySQL i PHP.
 
 - **Apache**: Serveix les peticions web en el port 80.
 - **MySQL**: Proporciona la base de dades amb configuració de secrets i volum persistent.
 - **PHP**: Processa els scripts PHP i es comunica amb Apache.
 
-### 2. **configmap.yaml**
+### **configmap.yaml**
 Aquest fitxer s'utilitza per proporcionar configuracions personalitzades per a PHP mitjançant un fitxer `php.ini`, com per exemple:
 - Límit de memòria (`memory_limit`).
 - Temps màxim d'execució (`max_execution_time`).
 - Mida màxima per pujar fitxers (`upload_max_filesize`).
 
-### 3. **hpa.yaml**
+### **hpa.yaml**
 El fitxer `hpa.yaml` crea un `HorizontalPodAutoscaler` (HPA) per gestionar l'escalabilitat automàtica dels components basats en l'ús de recursos (CPU, Memòria).
 
 - Configura mínim i màxim nombre de rèpliques.
 - Ajusta la càrrega de CPU i memòria per a l'autoscaling.
 
-### 4. **service.yaml**
+### **service.yaml**
 Defineix serveis per exposar els components dins de Kubernetes:
 
 - **Apache**: Exposa el servei a través del port 80.
 - **MySQL**: Exposa el servei a través del port 3306.
 - **PHP**: Exposa el servei a través del port 9000 per a la comunicació amb Apache.
 
-### 5. **secrets.yaml**
+### **secrets.yaml**
 Emmagatzema informació sensible com les contrasenyes de MySQL de manera segura. Les contrasenyes i usuaris es codifiquen en base64 per evitar l'emmagatzematge en text pla.
 
-### 6. **ingress.yaml**
+### **ingress.yaml**
 Configura un `Ingress` que permet l'accés extern al servei Apache a través del port 8080 (per defecte).
 
-### 7. **values.yaml**
-Aquest fitxer defineix els valors predeterminats per a la configuració de l'aplicació:
+### **storage.yaml**
 
-- Namespace
-- Configuracions per Apache, MySQL, PHP.
-- Opcions d'autoscaling.
-- Configuració d'Ingress i més.
+Les peticions d'espai d'emmagatzematge dinàmic es defineixen aquí on es vinculen amb `PersistentVolumes (PV)` al clúster i s'assignen als Pods amb `PersistentVolumeClaims (PVC)`. 
 
 ---
 
@@ -74,14 +85,13 @@ Per instal·lar aquest Helm Chart:
 2. Utilitza Helm per instal·lar el chart:
 
     ```bash
-    helm install lamp ./lamp
+    helm install lamp ./lamp --createnamespace lamp
     ```
 
 3. Comprova que els serveis estan en funcionament:
 
     ```bash
-    kubectl get pods
-    kubectl get services
+    kubectl get pods -n lamp kubectl get pods -n lamp
     ```
 
 ---
