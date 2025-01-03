@@ -75,10 +75,14 @@ spec:
         volumeMounts:
         - name: mysql-data
           mountPath: /var/lib/mysql
+        securityContext:
+          runAsUser: 1000
       volumes:
       - name: mysql-data
         persistentVolumeClaim:
           claimName: {{ .Release.Name }}-mysql-pvc
+
+
 ---
 
 apiVersion: apps/v1
@@ -114,6 +118,8 @@ spec:
         volumeMounts:
         - name: php-data
           mountPath: /var/www/html
+        securityContext:
+          runAsUser: 1000
       volumes:
       - name: php-data
         persistentVolumeClaim:
