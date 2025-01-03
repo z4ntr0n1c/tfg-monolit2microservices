@@ -36,8 +36,7 @@ spec:
   resources:
     requests:
       storage: 10Gi
-  storageClassName: {{ .Values.persistentVolume.storageClass }}
-
+      
 # PersistentVolume for PHP
 ---
 apiVersion: v1
@@ -75,4 +74,3 @@ spec:
   resources:
     requests:
       storage: 5Gi
-  storageClassName: {{ .Values.persistentVolume.storageClass }}
