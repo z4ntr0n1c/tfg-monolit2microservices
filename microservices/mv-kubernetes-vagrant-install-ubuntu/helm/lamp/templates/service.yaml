@@ -8,7 +8,7 @@ metadata:
     app: {{ .Chart.Name }}
     component: apache
 spec:
-  type: ClusterIP
+  type: NodePort
   ports:
   - port: {{ .Values.apache.port | default 80 }}
     targetPort: {{ .Values.apache.targetPort | default 80 }}
