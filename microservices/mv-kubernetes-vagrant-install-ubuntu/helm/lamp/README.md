@@ -1,94 +1,93 @@
 # LAMP Stack Deployment in Kubernetes with Helm
 
-Aquesta guia descriu com desplegar una pila LAMP (Linux, Apache, MySQL, PHP) dins de Kubernetes utilitzant Helm. El Helm Chart proporciona una solució fàcil i configurable per configurar, desplegar i gestionar tots els components d'una aplicació LAMP a Kubernetes.
+This guide describes how to deploy a LAMP (Linux, Apache, MySQL, PHP) stack inside Kubernetes using Helm. The Helm Chart provides an easy and configurable solution for configuring, deploying, and managing all components of a LAMP application on Kubernetes.
 
-## Components del Chart Helm
+## Components of Chart Helm
 
 ### 1. **Apache**
-- Serveix com a servidor web per a l'aplicació.
-- Utilitza la imatge `httpd:2.4` per al contenidor.
-- Exposa el servei a través del port 80.
+- Serves as a web server for the application.
+- Use the `httpd:2.4` image for the container.
+- Expose the service through port 80.
 
 ### 2. **MySQL**
-- Proporciona la base de dades per a l'aplicació.
-- Utilitza secrets per emmagatzemar les contrasenyes de manera segura.
-- Configurat per executar-se en el port 3306.
-- Utilitza un volum persistent per emmagatzemar les dades de la base de dades.
+- Provides the database for the application.
+- Use secrets to store passwords securely.
+- Configured to run on port 3306.
+- Uses a persistent volume to store database data.
 
 ### 3. **PHP**
-- Gestiona el processament PHP.
-- Configurat per funcionar amb Apache.
-- Utilitza configuracions personalitzades per a la gestió de memòria i el temps d'execució de PHP.
+- Handles PHP processing.
+- Configured to work with Apache.
+- Use custom settings for PHP runtime and memory management.
 
 ---
 
-## Fitxers i configuracions
+## Files and settings
 
 ### **Chart.yaml**:
 
-El fitxer `Chart.yaml` és el fitxer de metadades del chart. Conté informació bàsica sobre el chart com el seu nom, versió, descripció, i dependències. Aquest fitxer és necessari per a qualsevol chart Helm i s'utilitza per identificar el chart i la seva configuració general. 
+The `Chart.yaml` file is the chart metadata file. It contains basic information about the chart such as its name, version, description, and dependencies. This file is required for any Helm chart and is used to identify the chart and its general settings.
 
 ### **values.yaml**
 
-El fitxer `values.yaml` és el lloc on es defineixen els valors per defecte que es poden utilitzar a tot el chart. És una manera senzilla de proporcionar configuracions personalitzades per als recursos que s'instal·len al Kubernetes. Els valors definits en aquest fitxer poden ser substituïts mitjançant arguments de la línia de comandes o mitjançant fitxers d'override quan s'instal·la o actualitza un chart. 
+The `values.yaml` file is where you define the default values ​​that can be used throughout the chart. It's a simple way to provide custom configurations for resources that are installed on Kubernetes. The values ​​defined in this file can be overridden by command line arguments or by override files when installing or updating a chart.
 
-Alguns dels camps definits:
+Some of the defined fields:
 
 - Namespace
-- Configuracions per Apache, MySQL, PHP.
-- Opcions d'autoscaling.
-- Configuració d'Ingress i més.
+- Configurations for Apache, MySQL, PHP.
+- Autoscaling options.
+- Ingress configuration and more.
 
 ### **deployment.yaml**
-Aquest fitxer conté els `Deployments` per als components Apache, MySQL i PHP.
+This file contains the `Deployments` for the Apache, MySQL and PHP components.
 
-- **Apache**: Serveix les peticions web en el port 80.
-- **MySQL**: Proporciona la base de dades amb configuració de secrets i volum persistent.
-- **PHP**: Processa els scripts PHP i es comunica amb Apache.
+- **Apache**: Serves web requests on port 80.
+- **MySQL**: Provides the database with secret configuration and persistent volume.
+- **PHP**: Processes PHP scripts and communicates with Apache.
 
 ### **configmap.yaml**
-Aquest fitxer s'utilitza per proporcionar configuracions personalitzades per a PHP mitjançant un fitxer `php.ini`, com per exemple:
-- Límit de memòria (`memory_limit`).
-- Temps màxim d'execució (`max_execution_time`).
-- Mida màxima per pujar fitxers (`upload_max_filesize`).
+This file is used to provide custom settings for PHP via a `php.ini` file, such as:
+- Memory limit (`memory_limit`).
+- Maximum execution time (`max_execution_time`).
+- Maximum size to upload files (`upload_max_filesize`).
 
 ### **hpa.yaml**
-El fitxer `hpa.yaml` crea un `HorizontalPodAutoscaler` (HPA) per gestionar l'escalabilitat automàtica dels components basats en l'ús de recursos (CPU, Memòria).
+The `hpa.yaml` file creates a `HorizontalPodAutoscaler` (HPA) to handle automatic scaling of components based on resource usage (CPU, Memory).
 
-- Configura mínim i màxim nombre de rèpliques.
-- Ajusta la càrrega de CPU i memòria per a l'autoscaling.
+- Configure minimum and maximum number of replicas.
+- Adjust CPU and memory load for autoscaling.
 
 ### **service.yaml**
-Defineix serveis per exposar els components dins de Kubernetes:
+Define services to expose components within Kubernetes:
 
-- **Apache**: Exposa el servei a través del port 80.
-- **MySQL**: Exposa el servei a través del port 3306.
-- **PHP**: Exposa el servei a través del port 9000 per a la comunicació amb Apache.
+- **Apache**: Expose the service over port 80.
+- **MySQL**: Expose the service over port 3306.
+- **PHP**: It exposes the service over port 9000 for communication with Apache.
 
 ### **secrets.yaml**
-Emmagatzema informació sensible com les contrasenyes de MySQL de manera segura. Les contrasenyes i usuaris es codifiquen en base64 per evitar l'emmagatzematge en text pla.
+Store sensitive information like MySQL passwords securely. Passwords and users are base64 encoded to avoid storage in plain text.
 
 ### **ingress.yaml**
-Configura un `Ingress` que permet l'accés extern al servei Apache a través del port 8080 (per defecte).
+Configure an `Ingress` that allows external access to the Apache service through port 8080 (default).
 
 ### **storage.yaml**
 
-Les peticions d'espai d'emmagatzematge dinàmic es defineixen aquí on es vinculen amb `PersistentVolumes (PV)` al clúster i s'assignen als Pods amb `PersistentVolumeClaims (PVC)`. 
-
+Heap space claims are defined here where they are bound with `PersistentVolumes (PV)` in the cluster and assigned to Pods with `PersistentVolumeClaims (PVC)`.
 ---
 
-## Desplegar l'aplicació
+## Deploy the application
 
-Per instal·lar aquest Helm Chart:
+To install this Helm Chart:
 
-1. Descarrega o clona el repositori del Chart.
-2. Utilitza Helm per instal·lar el chart:
+1. Download or clone the Chart repository.
+2. Use Helm to install the chart:
 
     ```bash
     helm install lamp ./lamp --createnamespace lamp
     ```
 
-3. Comprova que els serveis estan en funcionament:
+3. Check that the services are up and running:
 
     ```bash
     kubectl get pods -n lamp kubectl get pods -n lamp
@@ -96,38 +95,37 @@ Per instal·lar aquest Helm Chart:
 
 ---
 
-## Configuració del Chart
+## Chart configuration
 
-### Configuració personalitzada a través de `values.yaml`:
+### Custom configuration via `values.yaml`:
 
-Per configurar els valors predeterminats, edita el fitxer `values.yaml`:
+To set the default values, edit the `values.yaml` file:
 
 - **Apache**:
-  - `image`: Imatge Docker per Apache.
-  - `port`: Port en el qual Apache escoltarà (per defecte 80).
-  
+  - `image`: Docker image for Apache.
+  - `port`: Port on which Apache will listen (default 80).
+
 - **MySQL**:
-  - `rootPassword`: Contrasenya per l'usuari root de MySQL.
-  - `user`: Usuari per a la base de dades.
-  - `password`: Contrasenya per a l'usuari de la base de dades.
+  - `rootPassword`: Password for the MySQL root user.
+  - `user`: User for the database.
+  - `password`: Password for the database user.
 
 - **PHP**:
-  - `memoryLimit`: Límit de memòria per a PHP.
-  - `maxExecutionTime`: Temps màxim d'execució per a PHP.
-  - `uploadMaxFilesize`: Mida màxima per als fitxers pujats.
+  - `memoryLimit`: Memory limit for PHP.
+  - `maxExecutionTime`: Maximum execution time for PHP.
+  - `uploadMaxFilesize`: Maximum size for uploaded files.
 
 - **Autoscaling**:
-  - `enabled`: Activa o desactiva l'autoscaling.
-  - `minReplicas`: Nombre mínim de rèpliques.
-  - `maxReplicas`: Nombre màxim de rèpliques.
+  - `enabled`: Activate or deactivate autoscaling.
+  - `minReplicas`: Minimum number of replicas.
+  - `maxReplicas`: Maximum number of replicas.
 
-### Desplegament en un entorn de producció
+### Deployment in a production environment
 
-Per desplegar l'aplicació en un entorn de producció, és recomanable utilitzar un `Ingress` per gestionar l'accés extern a la vostra aplicació i configurar les opcions de seguretat adequades.
+To deploy your application in a production environment, it is recommended to use an `Ingress` to manage external access to your application and configure appropriate security options.
 
 ---
 
-## Contribucions
+## Contributions
 
-Si tens suggeriments per millorar aquest Chart Helm o detectes algun error, si us plau, obre un **issue** o envia un **pull request**.
-
+If you have suggestions for improving this Chart Helm or spot any bugs, please open an **issue** or submit a **pull request**.
