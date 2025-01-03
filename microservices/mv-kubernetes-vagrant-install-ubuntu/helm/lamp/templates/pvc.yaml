@@ -1,3 +1,24 @@
+# PersistentVolume for MySQL
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ .Release.Name }}-mysql-pv
+  namespace: {{ .Release.namespace }}
+  labels:
+    app: {{ .Chart.Name }}
+    component: mysql
+spec:
+  capacity:
+    storage: 10Gi  
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce 
+  persistentVolumeReclaimPolicy: Retain  # What happens to the PV when the PVC is deleted
+  storageClassName: {{ .Values.persistentVolume.storageClass }}
+  hostPath:
+    path: /mnt/data/mysql  # Path on the node where data will be stored
+
 ---
 
 # PersistentVolumeClaim for MySQL
@@ -17,7 +38,26 @@ spec:
       storage: 10Gi
   storageClassName: {{ .Values.persistentVolume.storageClass }}
 
-
+# PersistentVolume for PHP
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ .Release.Name }}-php-pv
+  namespace: {{ .Release.namespace }}
+  labels:
+    app: {{ .Chart.Name }}
+    component: php
+spec:
+  capacity:
+    storage: 5Gi  
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce 
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: {{ .Values.persistentVolume.storageClass }}
+  hostPath:
+    path: /mnt/data/php
 ---
 
 # PersistentVolumeClaim for PHP
@@ -35,4 +75,4 @@ spec:
   resources:
     requests:
       storage: 5Gi
-  storageClassName: {{ .Values.persistentVolume.storageClass | default "standard" }}
+  storageClassName: {{ .Values.persistentVolume.storageClass }}
