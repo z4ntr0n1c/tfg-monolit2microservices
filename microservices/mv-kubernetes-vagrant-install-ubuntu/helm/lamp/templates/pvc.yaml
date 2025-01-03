@@ -17,7 +17,7 @@ spec:
   persistentVolumeReclaimPolicy: Retain  # What happens to the PV when the PVC is deleted
   storageClassName: {{ .Values.persistentVolume.storageClass }}
   hostPath:
-    path: /mnt/data/mysql  # Path on the node where data will be stored
+    path: /vagrant/data/mysql  # Path on the node where data will be stored
 
 ---
 
@@ -56,7 +56,7 @@ spec:
   persistentVolumeReclaimPolicy: Retain
   storageClassName: {{ .Values.persistentVolume.storageClass }}
   hostPath:
-    path: /mnt/data/php
+    path: /vagrant/data/php
 ---
 
 # PersistentVolumeClaim for PHP
