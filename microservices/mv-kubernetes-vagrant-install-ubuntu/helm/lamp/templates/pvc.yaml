@@ -15,7 +15,7 @@ spec:
   resources:
     requests:
       storage: 10Gi
-  storageClassName: {{ .Values.persistentVolume.storageClass | default "standard" }}
+  storageClassName: {{ .Values.persistentVolume.storageClass }}
 
 
 ---
