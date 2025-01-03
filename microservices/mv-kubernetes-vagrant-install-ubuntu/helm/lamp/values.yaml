@@ -1,7 +1,7 @@
 namespace: "lamp"
 
 persistentVolume:
-  storageClass: "standard"
+  storageClass: "default"
 
 apache:
   image: httpd:2.4
