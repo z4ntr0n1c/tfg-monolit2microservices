@@ -13,10 +13,10 @@ mysql:
   image: mysql:5.7
   port: 3306
   targetPort: 3306
-  rootPassword: "U3VwM3JTM2NyM3RSMDBUUDQzNDQwNXcwckQh"
-  database: d2lraWRi
-  user: d2lraXVzZXI=
-  password: "VzFrMVA0MzQ0MDV3MHJkLg=="
+  rootPassword: "Sup3rS3cr3tR00TP4$$w0rD!"
+  database: wikidb
+  user: wikiuser
+  password: "W1k1P4$$w0rd."
 
 php:
   image: php:8.1-fpm
