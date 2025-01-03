@@ -72,8 +72,8 @@ Store sensitive information like MySQL passwords securely. Passwords and users a
 Configure an `Ingress` that allows external access to the Apache service through port 8080 (default).
 
 ### **storage.yaml**
-
 Heap space claims are defined here where they are bound with `PersistentVolumes (PV)` in the cluster and assigned to Pods with `PersistentVolumeClaims (PVC)`.
+
 ---
 
 ## Deploy the application
