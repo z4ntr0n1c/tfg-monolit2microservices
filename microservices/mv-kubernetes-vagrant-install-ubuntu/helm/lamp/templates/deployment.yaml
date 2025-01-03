@@ -53,17 +53,23 @@ spec:
         - name: MYSQL_ROOT_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: {{ .Release.Name }}-mysql-secret
-              key: rootPassword
+              name: {{ .Release.Name }}-mysql-secrets
+              key: mysql-root-password
         - name: MYSQL_DATABASE
-          value: {{ .Values.mysql.database }}
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}-mysql-secrets
+              key: mysql-database
         - name: MYSQL_USER
-          value: {{ .Values.mysql.user }}
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}-mysql-secrets
+              key: mysql-user
         - name: MYSQL_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: {{ .Release.Name }}-mysql-secret
-              key: userPassword
+              name: {{ .Release.Name }}-mysql-secrets
+              key: mysql-password
         ports:
         - containerPort: {{ .Values.mysql.port }}
         volumeMounts:
