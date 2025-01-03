@@ -1,29 +1,58 @@
+# Apache Service
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ .Release.Name }}-apache
+  name: {{ .Release.Name }}-apache-service
+  namespace: {{ .Values.namespace }}
   labels:
     app: {{ .Chart.Name }}
+    component: apache
 spec:
   type: ClusterIP
   ports:
-  - port: 80
-    targetPort: {{ .Values.apache.port }}
+  - port: {{ .Values.apache.port | default 80 }}
+    targetPort: {{ .Values.apache.targetPort | default 80 }}
+    nodePort: {{ .Values.apache.nodePort | default 30080 }}
   selector:
     app: {{ .Chart.Name }}
+    component: apache
 
 ---
 
+# MySQL Service
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ .Release.Name }}-mysql
+  name: {{ .Release.Name }}-mysql-service
+  namespace: {{ .Values.namespace }}
   labels:
     app: {{ .Chart.Name }}
+    component: mysql
 spec:
   type: ClusterIP
   ports:
-  - port: 3306
-    targetPort: 3306
+  - port: {{ .Values.mysql.port | default 3306 }}
+    targetPort: {{ .Values.mysql.targetPort | default 3306 }}
   selector:
     app: {{ .Chart.Name }}
+    component: mysql
+
+---
+
+# PHP Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-php-service
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Chart.Name }}
+    component: php
+spec:
+  type: ClusterIP
+  ports:
+  - port: {{ .Values.php.port | default 9000 }}
+    targetPort: {{ .Values.php.targetPort | default 9000 }}
+  selector:
+    app: {{ .Chart.Name }}
+    component: php

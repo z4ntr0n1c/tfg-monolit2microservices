@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-php-config
+  namespace: {{ .Values.namespace }}
+data:
+  php.ini: |
+    memory_limit = {{ .Values.php.memoryLimit }}
+    max_execution_time = {{ .Values.php.maxExecutionTime }}
+    upload_max_filesize = {{ .Values.php.uploadMaxFilesize }}
+    post_max_size = {{ .Values.php.postMaxSize }}
+    error_reporting = {{ .Values.php.iniSettings.error_reporting }}
+    display_errors = {{ .Values.php.iniSettings.display_errors }}
+    log_errors = {{ .Values.php.iniSettings.log_errors }}
+    opcache_enable = {{ .Values.php.iniSettings.opcache_enable }}

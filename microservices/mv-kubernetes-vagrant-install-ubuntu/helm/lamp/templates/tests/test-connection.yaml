@@ -2,6 +2,7 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: "{{ include "lamp.fullname" . }}-test-connection"
+  namespace: {{ .Values.namespace }}
   labels:
     {{- include "lamp.labels" . | nindent 4 }}
   annotations:
@@ -11,5 +12,5 @@ spec:
     - name: wget
       image: busybox
       command: ['wget']
-      args: ['{{ include "lamp.fullname" . }}:{{ .Values.service.port }}']
+      args: ['{{ include "lamp.fullname" . }}-apache-service:{{ .Values.apache.port }}']
   restartPolicy: Never
