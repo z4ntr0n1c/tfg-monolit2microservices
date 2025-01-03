@@ -23,6 +23,7 @@ spec:
         image: {{ .Values.apache.image }}
         ports:
         - containerPort: {{ .Values.apache.port }}
+
 ---
 
 apiVersion: apps/v1
@@ -104,3 +105,10 @@ spec:
           value: "{{ .Values.php.memoryLimit }}"
         - name: PHP_MAX_EXECUTION_TIME
           value: "{{ .Values.php.maxExecutionTime }}"
+        volumeMounts:
+        - name: php-data
+          mountPath: /var/www/html
+      volumes:
+      - name: php-data
+        persistentVolumeClaim:
+          claimName: {{ .Release.Name }}-php-pvc

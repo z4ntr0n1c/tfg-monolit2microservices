@@ -1,0 +1,35 @@
+---
+
+# PersistentVolumeClaim for MySQL
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Release.Name }}-mysql-pvc
+  namespace: {{ .Release.namespace }}
+  labels:
+    app: {{ .Chart.Name }}
+    component: mysql
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+
+---
+
+# PersistentVolumeClaim for PHP
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Release.Name }}-php-pvc
+  namespace: {{ .Release.namespace }}
+  labels:
+    app: {{ .Chart.Name }}
+    component: php
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
