@@ -18,7 +18,6 @@ spec:
   storageClassName: {{ .Values.persistentVolume.storageClass }}
   hostPath:
     path: /vagrant/data/mysql
-  fsType: ext4 # Ensure that the MySQL filesystem in use supports AIO
 
 ---
 

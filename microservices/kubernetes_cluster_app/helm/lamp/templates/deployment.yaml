@@ -75,12 +75,18 @@ spec:
         volumeMounts:
         - name: mysql-data
           mountPath: /var/lib/mysql
+        - name: mysql-config
+          mountPath: /etc/mysql/conf.d/my.cnf
+          subPath: my.cnf
         securityContext:
           runAsUser: 1000
       volumes:
       - name: mysql-data
         persistentVolumeClaim:
           claimName: {{ .Release.Name }}-mysql-pvc
+      - name: mysql-config
+        configMap:
+          name: {{ .Release.Name }}-mysql-config
 
 
 ---
