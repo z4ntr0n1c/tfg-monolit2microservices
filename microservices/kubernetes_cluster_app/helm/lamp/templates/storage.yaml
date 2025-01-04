@@ -14,10 +14,11 @@ spec:
   volumeMode: Filesystem
   accessModes:
     - ReadWriteOnce 
-  persistentVolumeReclaimPolicy: Retain  # What happens to the PV when the PVC is deleted
+  persistentVolumeReclaimPolicy: Retain
   storageClassName: {{ .Values.persistentVolume.storageClass }}
   hostPath:
-    path: /vagrant/data/mysql  # Path on the node where data will be stored
+    path: /vagrant/data/mysql
+  fsType: ext4 # Ensure that the MySQL filesystem in use supports AIO
 
 ---
 
