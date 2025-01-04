@@ -1,0 +1,61 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-php-config
+  namespace: {{ .Values.namespace }}
+data:
+  php.ini: |
+    memory_limit = {{ .Values.php.memoryLimit }}
+    max_execution_time = {{ .Values.php.maxExecutionTime }}
+    upload_max_filesize = {{ .Values.php.uploadMaxFilesize }}
+    post_max_size = {{ .Values.php.postMaxSize }}
+    error_reporting = {{ .Values.php.iniSettings.error_reporting }}
+    display_errors = {{ .Values.php.iniSettings.display_errors }}
+    log_errors = {{ .Values.php.iniSettings.log_errors }}
+    opcache_enable = {{ .Values.php.iniSettings.opcache_enable }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-mysql-config
+  namespace: {{ .Values.namespace }}
+data:
+  my.cnf: |
+    [mysqld]
+    innodb_use_native_aio = {{ .Values.mysql.mycnfSettings.innodb_use_native_aio }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-apache-config
+  namespace: {{ .Release.namespace }}
+data:
+  mediawiki.conf: |
+    <VirtualHost *:80>
+      ServerName localhost
+      DocumentRoot /var/lib/mediawiki
+      <Directory /var/lib/mediawiki>
+        Options +FollowSymLinks
+        AllowOverride All
+      </Directory>
+      ErrorLog ${APACHE_LOG_DIR}/mediawiki-error.log
+      CustomLog ${APACHE_LOG_DIR}/mediawiki-access.log combined
+    </VirtualHost>
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-mediawiki-settings
+  namespace: {{ .Release.namespace }}
+data:
+  LocalSettings.php: |
+    # Contingut del teu fitxer LocalSettings.php
+    <?php
+    $wgSitename = "MediaWiki";
+    $wgScriptPath = "/mediawiki";
+    $wgDBname = getenv('MYSQL_DATABASE');
+    $wgDBuser = getenv('MYSQL_USER');
+    $wgDBpassword = getenv('MYSQL_PASSWORD');
+    # Altres configuracions...
