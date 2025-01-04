@@ -24,38 +24,76 @@ data:
   my.cnf: |
     [mysqld]
     innodb_use_native_aio = {{ .Values.mysql.mycnfSettings.innodb_use_native_aio }}
+
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: {{ .Release.Name }}-apache-config
-  namespace: {{ .Release.namespace }}
+  namespace: {{ .Values.namespace }}
 data:
   mediawiki.conf: |
     <VirtualHost *:80>
-      ServerName localhost
-      DocumentRoot /var/lib/mediawiki
-      <Directory /var/lib/mediawiki>
-        Options +FollowSymLinks
-        AllowOverride All
-      </Directory>
-      ErrorLog ${APACHE_LOG_DIR}/mediawiki-error.log
-      CustomLog ${APACHE_LOG_DIR}/mediawiki-access.log combined
+        ServerName localhost
+        ProxyPass / php://{{ .Release.Name }}-php-service:9000/
+        ProxyPassReverse / php://{{ .Release.Name }}-php-service:9000/
+        ErrorLog ${APACHE_LOG_DIR}/mediawiki-error.log
+        CustomLog ${APACHE_LOG_DIR}/mediawiki-access.log combined
     </VirtualHost>
+
 
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: {{ .Release.Name }}-mediawiki-settings
-  namespace: {{ .Release.namespace }}
+  namespace: {{ .Values.namespace }}
 data:
   LocalSettings.php: |
-    # Contingut del teu fitxer LocalSettings.php
     <?php
-    $wgSitename = "MediaWiki";
-    $wgScriptPath = "/mediawiki";
+    if ( !defined( 'MEDIAWIKI' ) ) {
+      exit;
+    }
+    require_once "$IP/includes/PlatformSettings.php";
+    $wgSitename = "Monolit2Microservices";
+    $wgScriptPath = "";
+    $wgServer = "http://localhost";
+    $wgResourceBasePath = $wgScriptPath;
+    $wgLogos = [ '1x' => "$wgResourceBasePath/resources/assets/wiki.png" ];
+    $wgEnableEmail = true;
+    $wgEnableUserEmail = true; # UPO
+    $wgEmergencyContact = "apache@🌻.invalid";
+    $wgPasswordSender = "apache@🌻.invalid";
+    $wgEnotifUserTalk = false; # UPO
+    $wgEnotifWatchlist = false; # UPO
+    $wgEmailAuthentication = true;
+    $wgDBtype = "mysql";
+    $wgDBserver = getenv('DB_SERVER');
     $wgDBname = getenv('MYSQL_DATABASE');
     $wgDBuser = getenv('MYSQL_USER');
     $wgDBpassword = getenv('MYSQL_PASSWORD');
-    # Altres configuracions...
+    $wgDBprefix = "m2m";
+    $wgDBTableOptions = "ENGINE=InnoDB, DEFAULT CHARSET=binary";
+    $wgSharedTables[] = "actor";
+    $wgMainCacheType = CACHE_ACCEL;
+    $wgMemCachedServers = [];
+    $wgEnableUploads = false;
+    $wgUseInstantCommons = false;
+    $wgPingback = true;
+    $wgShellLocale = "C.utf8";
+    $wgLanguageCode = "ca";
+    $wgSecretKey = "a17ca47abb212640217484aaf33a574f3039f4ceaf30697bc4221b36b5ac8e34";
+    $wgAuthenticationTokenVersion = "1";
+    $wgUpgradeKey = "9ce92dbb5335dff5";
+    $wgRightsPage = ""; # Set to the title of a wiki page that describes your license/copyright
+    $wgRightsUrl = "https://www.gnu.org/copyleft/fdl.html";
+    $wgRightsText = "GNU Free Documentation License 1.3 o posterior";
+    $wgRightsIcon = "$wgResourceBasePath/resources/assets/licenses/gnu-fdl.png";
+    $wgDiff3 = "/usr/bin/diff3";
+    $wgGroupPermissions['*']['createaccount'] = false;
+    $wgGroupPermissions['*']['edit'] = false;
+    $wgGroupPermissions['*']['read'] = false;
+    $wgDefaultSkin = "vector";
+    wfLoadSkin( 'MonoBook' );
+    wfLoadSkin( 'Timeless' );
+    wfLoadSkin( 'Vector' );

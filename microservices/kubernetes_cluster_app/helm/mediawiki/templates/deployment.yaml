@@ -5,9 +5,9 @@ metadata:
   labels:
     app: {{ .Chart.Name }}
     component: apache
-  namespace: {{ .Release.namespace }}
+  namespace: {{ .Values.namespace }}
 spec:
-  replicas: 1
+  replicas: {{ .Values.autoscaling.minReplicas }}
   selector:
     matchLabels:
       app: {{ .Chart.Name }}
@@ -23,40 +23,16 @@ spec:
         image: {{ .Values.apache.image }}
         ports:
         - containerPort: {{ .Values.apache.port }}
-        env:
-        - name: MYSQL_DATABASE
-          valueFrom:
-            secretKeyRef:
-              name: {{ .Release.Name }}-mysql-secrets
-              key: mysql-database
-        - name: MYSQL_USER
-          valueFrom:
-            secretKeyRef:
-              name: {{ .Release.Name }}-mysql-secrets
-              key: mysql-user
-        - name: MYSQL_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: {{ .Release.Name }}-mysql-secrets
-              key: mysql-password
-      volumeMounts:
+        volumeMounts:
+        - name: apache-config
+          mountPath: /etc/apache2/sites-enabled/mediawiki.conf
+          subPath: mediawiki.conf
+      volumes:
       - name: apache-config
-        mountPath: /etc/apache2/sites-enabled/mediawiki.conf
-        subPath: mediawiki.conf
-      - name: mediawiki-settings
-        mountPath: /var/lib/mediawiki/LocalSettings.php
-        subPath: LocalSettings.php
-    volumes:
-    - name: apache-config
-      configMap:
-        name: {{ .Release.Name }}-apache-config
-    - name: mediawiki-settings
-      configMap:
-        name: {{ .Release.Name }}-mediawiki-settings
-
+        configMap:
+          name: {{ .Release.Name }}-apache-config
 
 ---
-
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -64,9 +40,9 @@ metadata:
   labels:
     app: {{ .Chart.Name }}
     component: mysql
-  namespace: {{ .Release.namespace }}
+  namespace: {{ .Values.namespace }}
 spec:
-  replicas: 1
+  replicas: {{ .Values.autoscaling.minReplicas }}
   selector:
     matchLabels:
       app: {{ .Chart.Name }}
@@ -119,9 +95,7 @@ spec:
         configMap:
           name: {{ .Release.Name }}-mysql-config
 
-
 ---
-
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -129,9 +103,9 @@ metadata:
   labels:
     app: {{ .Chart.Name }}
     component: php
-  namespace: {{ .Release.namespace }}
+  namespace: {{ .Values.namespace }}
 spec:
-  replicas: 1
+  replicas: {{ .Values.autoscaling.minReplicas }}
   selector:
     matchLabels:
       app: {{ .Chart.Name }}
@@ -152,12 +126,33 @@ spec:
           value: "{{ .Values.php.memoryLimit }}"
         - name: PHP_MAX_EXECUTION_TIME
           value: "{{ .Values.php.maxExecutionTime }}"
+        - name: DB_SERVER
+          value: "{{ .Release.Name }}-mysql-service.{{ .Values.namespace }}"
+        - name: MYSQL_DATABASE
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}-mysql-secrets
+              key: mysql-database
+        - name: MYSQL_USER
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}-mysql-secrets
+              key: mysql-user
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}-mysql-secrets
+              key: mysql-password
         volumeMounts:
         - name: php-data
           mountPath: /var/www/html
-        securityContext:
-          runAsUser: 1000
+        - name: mediawiki-settings
+          mountPath: /var/www/html/LocalSettings.php
+          subPath: LocalSettings.php  
       volumes:
       - name: php-data
         persistentVolumeClaim:
           claimName: {{ .Release.Name }}-php-pvc
+      - name: mediawiki-settings
+        configMap:
+          name: {{ .Release.Name }}-mediawiki-settings    

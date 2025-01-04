@@ -17,7 +17,7 @@ mysql:
   rootPassword: "U3VwM3JTM2NyM3RSMDBUUDQzNDQwNXcwckQh"
   database: d2lraWRi
   user: d2lraXVzZXI=
-  password: "S2FsMW1vdHhvIQo="
+  password: "VzFrMVAjNHNzdzByZAo="
   mycnfSettings:
     innodb_use_native_aio: "0"
 
