@@ -25,8 +25,8 @@ spec:
         - containerPort: {{ .Values.apache.port }}
         volumeMounts:
         - name: apache-config
-          mountPath: /etc/apache2/sites-enabled/mediawiki.conf
-          subPath: mediawiki.conf
+          mountPath: /usr/local/apache2/conf/httpd.conf
+          subPath: httpd.conf
       volumes:
       - name: apache-config
         configMap:

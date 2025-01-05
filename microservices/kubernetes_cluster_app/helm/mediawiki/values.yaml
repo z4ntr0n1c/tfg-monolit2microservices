@@ -4,7 +4,7 @@ persistentVolume:
   storageClass: "default"
 
 apache:
-  image: httpd:2.4
+  image: httpd:latest
   port: 80
   targetPort: 80
   nodePort: 30080
