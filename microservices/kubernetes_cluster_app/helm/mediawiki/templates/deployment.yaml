@@ -27,13 +27,13 @@ spec:
         - name: apache-config
           mountPath: /usr/local/apache2/conf/httpd.conf
           subPath: httpd.conf
-                resources:
-        requests:
-          memory: "128Mi"
-          cpu: "500m"
-        limits:
-          memory: "256Mi"
-          cpu: "1"  
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "500m"
+          limits:
+            memory: "256Mi"
+            cpu: "1"  
       volumes:
       - name: apache-config
         configMap:
