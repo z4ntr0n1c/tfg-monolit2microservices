@@ -121,9 +121,6 @@ data:
         ServerName localhost
         ProxyPass / php://{{ .Release.Name }}-php-service.{{ .Values.namespace }}:{{ .Values.php.port }}/
         ProxyPassReverse / php://{{ .Release.Name }}-php-service.{{ .Values.namespace }}:{{ .Values.php.port }}/
-        <FilesMatch "\.php$">
-          SetHandler "proxy:unix:/path/to/php-fpm.sock|fcgi://localhost"
-        </FilesMatch>
     </VirtualHost>
     <IfModule ssl_module>
     SSLRandomSeed startup builtin
