@@ -1,6 +1,8 @@
 microservices/.vagrant
 microservices/kubernetes_cluster_app/.vagrant
 microservices/kubernetes_cluster_app/data
+microservices/kubernetes_cluster_app/config
+microservices/kubernetes_cluster_app/join.sh
 microservices/kubernetes_cluster_argocd/.vagrant
 monolit/lamp/Vagrant/.vagrant
 
