@@ -77,6 +77,11 @@ sudo systemctl daemon-reload
 sudo systemctl restart kubelet
 sudo systemctl enable docker
 
+# Install metrics
+kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+kubectl patch deployment metrics-server -n kube-system \
+--patch '{"spec": {"template": {"spec": {"containers": [{"name": "metrics-server", "args": ["--kubelet-insecure-tls", "--metric-resolution=30s"]}]}}}}'
+                                   
 #Install Kubernetes Dashboard
 kubectl apply -f /vagrant/kubernetes-dashboard.yaml
 kubectl create serviceaccount kubernetes-dashboard-admin -n kubernetes-dashboard
