@@ -30,6 +30,11 @@ php:
   uploadMaxFilesize: "20M"
   postMaxSize: "25M"
   extensions:
+    - ctype
+    - dom
+    - iconv
+    - libxml
+    - openssl
     - gd
     - mbstring
     - xml
@@ -49,6 +54,7 @@ php:
   fpmSettings:
     user: "www-data"
     group: "www-data"
+    log_level: "notice"
     pm: "dynamic"
     pm_max_children: "10"
     pm_start_servers: "2"
