@@ -158,6 +158,9 @@ spec:
               name: {{ .Release.Name }}-mysql-secrets
               key: mysql-password
         volumeMounts:
+        - name: php-fpm-config
+          mountPath: /usr/local/etc/php-fpm.d/www.conf
+          subPath: www.conf
         - name: php-data
           mountPath: /var/www/html
         - name: mediawiki-settings
@@ -174,6 +177,9 @@ spec:
       - name: php-data
         persistentVolumeClaim:
           claimName: {{ .Release.Name }}-php-pvc
+      - name: php-fpm-config
+        configMap:
+          name: {{ .Release.Name }}-php-fpm-config
       - name: mediawiki-settings
         configMap:
           name: {{ .Release.Name }}-mediawiki-settings    

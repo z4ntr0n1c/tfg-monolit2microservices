@@ -14,6 +14,25 @@ data:
     display_errors = {{ .Values.php.iniSettings.display_errors }}
     log_errors = {{ .Values.php.iniSettings.log_errors }}
     opcache_enable = {{ .Values.php.iniSettings.opcache_enable }}
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-php-fpm-config
+  namespace: {{ .Values.namespace }}
+data:
+  www.conf: |
+    [www]
+    user = {{ .Values.php.fpmSettings.user }}
+    group = {{ .Values.php.fpmSettings.group }}
+    listen = 0.0.0.0:{{ .Values.php.port }}
+    pm = {{ .Values.php.fpmSettings.pm }}
+    pm.max_children = {{ .Values.php.fpmSettings.pm_max_children }}
+    pm.start_servers = {{ .Values.php.fpmSettings.pm_start_servers }}
+    pm.min_spare_servers = {{ .Values.php.fpmSettings.pm_min_spare_servers }}
+    pm.max_spare_servers = {{ .Values.php.fpmSettings.pm_max_spare_servers }}
+
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -119,8 +138,8 @@ data:
     </IfModule>
     <VirtualHost *:80>
         ServerName localhost
-        ProxyPass / php://{{ .Release.Name }}-php-service.{{ .Values.namespace }}:{{ .Values.php.port }}/
-        ProxyPassReverse / php://{{ .Release.Name }}-php-service.{{ .Values.namespace }}:{{ .Values.php.port }}/
+        ProxyPass / http://{{ .Release.Name }}-php-service.{{ .Values.namespace }}:{{ .Values.php.port }}/
+        ProxyPassReverse / http://{{ .Release.Name }}-php-service.{{ .Values.namespace }}:{{ .Values.php.port }}/
     </VirtualHost>
     <IfModule ssl_module>
     SSLRandomSeed startup builtin
