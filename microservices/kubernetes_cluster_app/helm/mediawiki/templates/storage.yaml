@@ -10,7 +10,7 @@ metadata:
     component: mysql
 spec:
   capacity:
-    storage: 10Gi  
+    storage: 1Gi  
   volumeMode: Filesystem
   accessModes:
     - ReadWriteOnce 
@@ -36,7 +36,7 @@ spec:
   storageClassName: {{ .Values.persistentVolume.storageClass }}
   resources:
     requests:
-      storage: 10Gi
+      storage: 1Gi
       
 # PersistentVolume for PHP
 ---
@@ -50,10 +50,10 @@ metadata:
     component: php
 spec:
   capacity:
-    storage: 5Gi  
+    storage: 1Gi  
   volumeMode: Filesystem
   accessModes:
-    - ReadWriteOnce 
+    - ReadWriteMany 
   persistentVolumeReclaimPolicy: Retain
   storageClassName: {{ .Values.persistentVolume.storageClass }}
   hostPath:
@@ -71,8 +71,8 @@ metadata:
     component: php
 spec:
   accessModes:
-    - ReadWriteOnce
+    - ReadWriteMany
   storageClassName: {{ .Values.persistentVolume.storageClass }}
   resources:
     requests:
-      storage: 5Gi
+      storage: 1Gi
