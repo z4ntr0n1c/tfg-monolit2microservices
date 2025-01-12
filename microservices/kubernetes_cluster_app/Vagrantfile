@@ -77,4 +77,18 @@ sudo systemctl daemon-reload
 sudo systemctl restart kubelet
 sudo systemctl enable docker
 
+#Install Kubernetes Dashboard
+kubectl apply -f /vagrant/kubernetes-dashboard.yaml
+kubectl create serviceaccount kubernetes-dashboard-admin -n kubernetes-dashboard
+kubectl create clusterrolebinding kubernetes-dashboard-admin --clusterrole=cluster-admin --serviceaccount=kubernetes-dashboard:kubernetes-dashboard-admin
+echo "Write down token for Kubernetes Dashboard:"
+kubectl -n kubernetes-dashboard get secret $(kubectl -n kubernetes-dashboard get sa/kubernetes-dashboard-admin -o jsonpath="{.secrets[0].name}") -o go-template="{{.data.token | base64decode}}"
+echo
+
+#Install HELM
+/vagrant/helm/get_helm.sh
+
+#Install MediaWiki
+helm install mediawiki /vagrant/helm/mediawiki --create-namespace --namespace mediawiki
+
 SHELL
