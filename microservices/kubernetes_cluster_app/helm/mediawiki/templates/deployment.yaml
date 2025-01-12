@@ -27,6 +27,11 @@ spec:
         - name: apache-config
           mountPath: /usr/local/apache2/conf/httpd.conf
           subPath: httpd.conf
+        - name: php-data
+          mountPath: /var/www/html
+        - name: mediawiki-settings
+          mountPath: /var/www/html/LocalSettings.php
+          subPath: LocalSettings.php  
         resources:
           requests:
             memory: "128Mi"
@@ -38,6 +43,12 @@ spec:
       - name: apache-config
         configMap:
           name: {{ .Release.Name }}-apache-config
+      - name: php-data
+        persistentVolumeClaim:
+          claimName: {{ .Release.Name }}-php-pvc
+      - name: mediawiki-settings
+        configMap:
+          name: {{ .Release.Name }}-mediawiki-settings    
 
 ---
 apiVersion: apps/v1

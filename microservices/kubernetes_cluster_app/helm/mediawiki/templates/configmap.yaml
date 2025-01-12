@@ -23,6 +23,8 @@ metadata:
   namespace: {{ .Values.namespace }}
 data:
   www.conf: |
+    [global]
+    log_level = {{ .Values.php.fpmSettings.log_level }}
     [www]
     user = {{ .Values.php.fpmSettings.user }}
     group = {{ .Values.php.fpmSettings.group }}
@@ -32,6 +34,7 @@ data:
     pm.start_servers = {{ .Values.php.fpmSettings.pm_start_servers }}
     pm.min_spare_servers = {{ .Values.php.fpmSettings.pm_min_spare_servers }}
     pm.max_spare_servers = {{ .Values.php.fpmSettings.pm_max_spare_servers }}
+    pm.status_path = /status
 
 ---
 apiVersion: v1
@@ -137,9 +140,18 @@ data:
     Include conf/extra/proxy-html.conf
     </IfModule>
     <VirtualHost *:80>
-        ServerName localhost
-        ProxyPass / http://{{ .Release.Name }}-php-service.{{ .Values.namespace }}:{{ .Values.php.port }}/
-        ProxyPassReverse / http://{{ .Release.Name }}-php-service.{{ .Values.namespace }}:{{ .Values.php.port }}/
+      ServerName localhost
+      DocumentRoot /var/www/html
+      <Directory /var/www/html>
+        DirectoryIndex index.php
+        Options +FollowSymLinks +Indexes
+        AllowOverride All
+        Require all granted
+      </Directory>
+      AddType application/x-httpd-php .php
+      <FilesMatch \.php$>
+        SetHandler "proxy:fcgi://{{ .Release.Name }}-php-service.{{ .Values.namespace }}:{{ .Values.php.port }}/"
+      </FilesMatch>
     </VirtualHost>
     <IfModule ssl_module>
     SSLRandomSeed startup builtin
