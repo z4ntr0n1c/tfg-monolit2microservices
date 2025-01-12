@@ -60,7 +60,6 @@ php:
     pm_start_servers: "2"
     pm_min_spare_servers: "1"
     pm_max_spare_servers: "3"
-    
 
 autoscaling:
   enabled: true 
