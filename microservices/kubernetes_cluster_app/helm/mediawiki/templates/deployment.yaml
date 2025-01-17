@@ -27,11 +27,6 @@ spec:
         - name: apache-config
           mountPath: /usr/local/apache2/conf/httpd.conf
           subPath: httpd.conf
-        - name: php-data
-          mountPath: /var/www/html
-        - name: mediawiki-settings
-          mountPath: /var/www/html/LocalSettings.php
-          subPath: LocalSettings.php  
         resources:
           requests:
             memory: "128Mi"
@@ -43,13 +38,6 @@ spec:
       - name: apache-config
         configMap:
           name: {{ .Release.Name }}-apache-config
-      - name: php-data
-        persistentVolumeClaim:
-          claimName: {{ .Release.Name }}-php-pvc
-      - name: mediawiki-settings
-        configMap:
-          name: {{ .Release.Name }}-mediawiki-settings    
-
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -172,11 +160,6 @@ spec:
         - name: php-fpm-config
           mountPath: /usr/local/etc/php-fpm.d/www.conf
           subPath: www.conf
-        - name: php-data
-          mountPath: /var/www/html
-        - name: mediawiki-settings
-          mountPath: /var/www/html/LocalSettings.php
-          subPath: LocalSettings.php  
         resources:
           requests:
             memory: "128Mi"
@@ -185,12 +168,6 @@ spec:
             memory: "256Mi"
             cpu: "500m" 
       volumes:
-      - name: php-data
-        persistentVolumeClaim:
-          claimName: {{ .Release.Name }}-php-pvc
       - name: php-fpm-config
         configMap:
           name: {{ .Release.Name }}-php-fpm-config
-      - name: mediawiki-settings
-        configMap:
-          name: {{ .Release.Name }}-mediawiki-settings    

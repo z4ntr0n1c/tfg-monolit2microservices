@@ -57,7 +57,7 @@ data:
   httpd.conf: |
     ServerName localhost
     ServerRoot "/usr/local/apache2"
-    Listen 80
+    Listen 80    
     LoadModule mpm_event_module modules/mod_mpm_event.so
     LoadModule authn_file_module modules/mod_authn_file.so
     LoadModule authn_core_module modules/mod_authn_core.so
@@ -81,6 +81,7 @@ data:
     LoadModule proxy_module modules/mod_proxy.so
     LoadModule proxy_http_module modules/mod_proxy_http.so
     LoadModule proxy_fcgi_module modules/mod_proxy_fcgi.so
+    LoadModule rewrite_module modules/mod_rewrite.so
     <IfModule !mpm_prefork_module>
     </IfModule>
     <IfModule mpm_prefork_module>
@@ -90,6 +91,19 @@ data:
     <IfModule unixd_module>
     User www-data
     Group www-data
+    DirectoryIndex index.php
+    FallbackResource /wiki/index.php
+    AddType application/x-httpd-php .php
+    RewriteEngine On
+    RewriteCond %{REQUEST_URI} !^/wiki
+    RewriteRule ^/$ /wiki [R=300,L]
+    RewriteCond %{REQUEST_URI} ^/mw-config
+    RewriteRule ^(.*)$ /wiki/mw-config/index.php [R=301,L]
+    ProxyPass "/wiki" "http://{{ .Release.Name }}-php-service.{{ .Values.namespace }}:{{ .Values.php.port }}/index.php"
+    ProxyPassReverse "/wiki" "http://{{ .Release.Name }}-php-service.{{ .Values.namespace }}:{{ .Values.php.port }}/index.php"
+    <FilesMatch \.php$>
+      SetHandler "proxy:fcgi://{{ .Release.Name }}-php-service.{{ .Values.namespace }}:{{ .Values.php.port }}/"
+    </FilesMatch>
     </IfModule>
     ServerAdmin you@example.com
     <Directory />
@@ -139,25 +153,11 @@ data:
     <IfModule proxy_html_module>
     Include conf/extra/proxy-html.conf
     </IfModule>
-    <VirtualHost *:80>
-      ServerName localhost
-      DocumentRoot /var/www/html
-      <Directory /var/www/html>
-        DirectoryIndex index.php
-        Options +FollowSymLinks +Indexes
-        AllowOverride All
-        Require all granted
-      </Directory>
-      AddType application/x-httpd-php .php
-      <FilesMatch \.php$>
-        SetHandler "proxy:fcgi://{{ .Release.Name }}-php-service.{{ .Values.namespace }}:{{ .Values.php.port }}/"
-      </FilesMatch>
-    </VirtualHost>
     <IfModule ssl_module>
     SSLRandomSeed startup builtin
     SSLRandomSeed connect builtin
     </IfModule>
-
+    
 ---
 apiVersion: v1
 kind: ConfigMap
