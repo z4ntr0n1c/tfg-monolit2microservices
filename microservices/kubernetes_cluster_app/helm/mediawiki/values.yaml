@@ -22,9 +22,9 @@ mysql:
     innodb_use_native_aio: "0"
 
 php:
-  image: php:8.1-fpm
-  port: 9000
-  targetPort: 9000
+  image: mediawiki:latest
+  port: 80
+  targetPort: 80
   memoryLimit: "256M"
   maxExecutionTime: 120
   uploadMaxFilesize: "20M"
