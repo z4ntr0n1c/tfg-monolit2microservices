@@ -37,4 +37,45 @@ spec:
   resources:
     requests:
       storage: 1Gi
+
+
+# PersistentVolume for PHP
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ .Release.Name }}-php-pv
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Chart.Name }}
+    component: php
+spec:
+  capacity:
+    storage: 1Gi  
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce 
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: {{ .Values.persistentVolume.storageClass }}
+  hostPath:
+    path: /vagrant/data/php/mediawiki/images
+
+---
+
+# PersistentVolumeClaim for PHP
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Release.Name }}-php-pvc
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Chart.Name }}
+    component: php
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: {{ .Values.persistentVolume.storageClass }}
+  resources:
+    requests:
+      storage: 1Gi
       

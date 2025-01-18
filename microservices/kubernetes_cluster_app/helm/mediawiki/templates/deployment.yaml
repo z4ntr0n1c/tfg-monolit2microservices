@@ -160,6 +160,10 @@ spec:
         - name: php-fpm-config
           mountPath: /usr/local/etc/php-fpm.d/www.conf
           subPath: www.conf
+        - name: mediawiki-volume
+          mountPath: /var/www/html/images
+        - name: mediawiki-localsettings
+          mountPath: /var/www/html/LocalSettings.php
         resources:
           requests:
             memory: "128Mi"
@@ -171,3 +175,9 @@ spec:
       - name: php-fpm-config
         configMap:
           name: {{ .Release.Name }}-php-fpm-config
+      - name: mediawiki-volume
+        persistentVolumeClaim:
+          claimName: {{ .Release.Name }}-php-pvc
+      - name: mediawiki-localsettings
+        hostPath: 
+          path: /vagrant/data/php/mediawiki/LocalSettings.php
