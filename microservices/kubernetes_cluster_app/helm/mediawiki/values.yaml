@@ -16,8 +16,8 @@ mysql:
   targetPort: 3306
   rootPassword: "U3VwM3JTM2NyM3RSMDBUUDQzNDQwNXcwckQh"
   database: d2lraWRi
-  user: cm9vdAo=
-  password: "U3VwM3JTM2NyM3RSMDBUUDQzNDQwNXcwckQh"
+  user: d2lraXVzZXI=
+  password: "VzFrMVAjNHNzdzByZAo="
   mycnfSettings:
     innodb_use_native_aio: "0"
 
