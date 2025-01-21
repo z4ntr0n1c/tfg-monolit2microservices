@@ -18,6 +18,7 @@ This guide describes how to deploy a mediawiki (Linux, Apache, MySQL, PHP) stack
 ### 3. **PHP**
 - Handles PHP processing.
 - Configured to work with Apache.
+- Use the `mediawiki` image for the container.
 - Use custom settings for PHP runtime and memory management.
 
 ---
@@ -61,15 +62,15 @@ The `hpa.yaml` file creates a `HorizontalPodAutoscaler` (HPA) to handle automati
 ### **service.yaml**
 Define services to expose components within Kubernetes:
 
-- **Apache**: Expose the service over port 80.
+- **Apache**: Expose the service over port 80. Has the `NodePort` configuration for accessing the MediaWiki.
 - **MySQL**: Expose the service over port 3306.
-- **PHP**: It exposes the service over port 9000 for communication with Apache.
+- **PHP**: It exposes the service over port 9000 and 80 for communication with Apache.
 
 ### **secrets.yaml**
 Store sensitive information like MySQL passwords securely. Passwords and users are base64 encoded to avoid storage in plain text.
 
 ### **ingress.yaml**
-Configure an `Ingress` that allows external access to the Apache service through port 8080 (default).
+Configure an `Ingress` that allows external access to the Apache service through port 80 (default).
 
 ### **storage.yaml**
 Heap space claims are defined here where they are bound with `PersistentVolumes (PV)` in the cluster and assigned to Pods with `PersistentVolumeClaims (PVC)`.
