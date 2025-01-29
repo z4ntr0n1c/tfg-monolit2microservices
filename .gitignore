@@ -1,3 +1,4 @@
+.vscode
 microservices/.vagrant
 microservices/kubernetes_cluster_app/.vagrant
 microservices/kubernetes_cluster_app/data
