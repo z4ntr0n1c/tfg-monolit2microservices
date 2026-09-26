@@ -67,7 +67,10 @@ Define services to expose components within Kubernetes:
 - **PHP**: It exposes the service over port 9000 and 80 for communication with Apache.
 
 ### **secrets.yaml**
-Store sensitive information like MySQL passwords securely. Passwords and users are base64 encoded to avoid storage in plain text.
+Previously stored MySQL passwords as base64-encoded Kubernetes Secrets. Now replaced by **HashiCorp Vault** — credentials are injected at runtime by the Vault Agent sidecar (see annotations in `deployment.yaml`).
+
+### **serviceaccount.yaml**
+Defines the `mediawiki-sa` ServiceAccount used by pods to authenticate with Vault's Kubernetes auth backend.
 
 ### **ingress.yaml**
 Configure an `Ingress` that allows external access to the Apache service through port 80 (default).
@@ -107,9 +110,9 @@ To set the default values, edit the `values.yaml` file:
   - `port`: Port on which Apache will listen (default 80).
 
 - **MySQL**:
-  - `rootPassword`: Password for the MySQL root user.
-  - `user`: User for the database.
-  - `password`: Password for the database user.
+  - `image`: Docker image for MySQL.
+  - `port`: Port for MySQL (default 3306).
+  - Credentials (`rootPassword`, `user`, `password`, `database`) are managed by **HashiCorp Vault** and injected at runtime — they are no longer set in `values.yaml`.
 
 - **PHP**:
   - `memoryLimit`: Memory limit for PHP.
