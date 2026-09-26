@@ -16,7 +16,7 @@ if ( !defined( 'MEDIAWIKI' ) ) {
 }
 
 ## Include platform/distribution defaults
-require_once "$IP/includes/PlatformSettings.php";
+# require_once "$IP/includes/PlatformSettings.php";
 
 ## Uncomment this to disable output compression
 # $wgDisableOutputCompression = true;
@@ -57,7 +57,7 @@ $wgDBtype = "mysql";
 $wgDBserver = "127.0.0.1";
 $wgDBname = "wikidb";
 $wgDBuser = "wikiuser";
-$wgDBpassword = "Sup3rS3cr3tP4$$w0rd!";
+$wgDBpassword = "W1k1P#4ssw0rd";
 
 # MySQL specific settings
 $wgDBprefix = "m2m";

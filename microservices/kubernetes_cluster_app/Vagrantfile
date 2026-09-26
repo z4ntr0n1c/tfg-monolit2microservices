@@ -93,6 +93,57 @@ echo
 #Install HELM
 /vagrant/helm/get_helm.sh
 
+# ── Vault (dev mode) ─────────────────────────────────────────────────────────
+helm repo add hashicorp https://helm.releases.hashicorp.com
+helm repo update
+kubectl create namespace vault
+helm install vault hashicorp/vault \
+  --namespace vault \
+  --set "server.dev.enabled=true" \
+  --set "server.dev.devRootToken=root" \
+  --set "injector.enabled=true"
+
+# Wait for Vault pod and injector webhook to be ready
+kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=vault \
+  -n vault --timeout=180s
+kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=vault-agent-injector \
+  -n vault --timeout=120s
+
+# Enable Kubernetes auth backend
+kubectl exec -n vault vault-0 -- vault auth enable kubernetes
+kubectl exec -n vault vault-0 -- sh -c 'vault write auth/kubernetes/config \
+  kubernetes_host="https://10.0.0.10:6443" \
+  kubernetes_ca_cert=@/var/run/secrets/kubernetes.io/serviceaccount/ca.crt \
+  token_reviewer_jwt="$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)"'
+
+# Enable KV-v2 secrets engine and seed MediaWiki secrets
+kubectl exec -n vault vault-0 -- vault secrets enable -path=secret kv-v2
+kubectl exec -n vault vault-0 -- vault kv put secret/mediawiki/mysql \
+  root_password="SuprS3cr3tR00TP43440w0rD!" \
+  database="wikidb" \
+  user="wikiuser" \
+  password="W1k1P#4ssw0rd"
+kubectl exec -n vault vault-0 -- vault kv put secret/mediawiki/app \
+  secret_key="a17ca47abb212640217484aaf33a574f3039f4ceaf30697bc4221b36b5ac8e34" \
+  upgrade_key="9ce92dbb5335dff5"
+
+# Create Vault policy for mediawiki (read-only on its own paths)
+kubectl exec -n vault vault-0 -- vault policy write mediawiki - <<'VAULTPOLICY'
+path "secret/data/mediawiki/*" {
+  capabilities = ["read"]
+}
+VAULTPOLICY
+
+# Bind the mediawiki ServiceAccount to the policy
+kubectl exec -n vault vault-0 -- vault write auth/kubernetes/role/mediawiki \
+  bound_service_account_names=mediawiki-sa \
+  bound_service_account_namespaces=mediawiki \
+  policies=mediawiki \
+  ttl=1h
+
+echo "==> Vault dev-mode ready. UI: kubectl port-forward -n vault svc/vault 8200:8200 (token: root)"
+# ─────────────────────────────────────────────────────────────────────────────
+
 #Install MediaWiki
 helm install mediawiki /vagrant/helm/mediawiki --create-namespace --namespace mediawiki
 

@@ -14,10 +14,8 @@ mysql:
   image: mysql:5.7
   port: 3306
   targetPort: 3306
-  rootPassword: "U3VwM3JTM2NyM3RSMDBUUDQzNDQwNXcwckQh"
-  database: d2lraWRi
-  user: d2lraXVzZXI=
-  password: "VzFrMVAjNHNzdzByZAo="
+  # Credentials are managed by HashiCorp Vault (secret/mediawiki/mysql).
+  # Do NOT set rootPassword / database / user / password here.
   mycnfSettings:
     innodb_use_native_aio: "0"
 

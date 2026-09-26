@@ -58,31 +58,29 @@ spec:
       labels:
         app: {{ .Chart.Name }}
         component: mysql
+      annotations:
+        vault.hashicorp.com/agent-inject: "true"
+        vault.hashicorp.com/role: "mediawiki"
+        # Render MySQL secrets as a sourceable shell env file
+        vault.hashicorp.com/agent-inject-secret-mysql.env: "secret/data/mediawiki/mysql"
+        vault.hashicorp.com/agent-inject-template-mysql.env: |
+          {{`{{- with secret "secret/data/mediawiki/mysql" -}}
+          export MYSQL_ROOT_PASSWORD="{{ .Data.data.root_password }}"
+          export MYSQL_DATABASE="{{ .Data.data.database }}"
+          export MYSQL_USER="{{ .Data.data.user }}"
+          export MYSQL_PASSWORD="{{ .Data.data.password }}"
+          {{- end }}`}}
     spec:
+      serviceAccountName: mediawiki-sa
       containers:
       - name: mysql
         image: {{ .Values.mysql.image }}
-        env:
-        - name: MYSQL_ROOT_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: {{ .Release.Name }}-mysql-secrets
-              key: mysql-root-password
-        - name: MYSQL_DATABASE
-          valueFrom:
-            secretKeyRef:
-              name: {{ .Release.Name }}-mysql-secrets
-              key: mysql-database
-        - name: MYSQL_USER
-          valueFrom:
-            secretKeyRef:
-              name: {{ .Release.Name }}-mysql-secrets
-              key: mysql-user
-        - name: MYSQL_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: {{ .Release.Name }}-mysql-secrets
-              key: mysql-password
+        # Source the Vault-injected env file before starting mysqld
+        command: ["/bin/sh", "-c"]
+        args:
+          - |
+            . /vault/secrets/mysql.env
+            exec docker-entrypoint.sh mysqld
         ports:
         - containerPort: {{ .Values.mysql.port }}
         volumeMounts:
@@ -99,7 +97,7 @@ spec:
             cpu: "250m"
           limits:
             memory: "256Mi"
-            cpu: "500m" 
+            cpu: "500m"
       volumes:
       - name: mysql-data
         persistentVolumeClaim:
@@ -128,12 +126,38 @@ spec:
       labels:
         app: {{ .Chart.Name }}
         component: php
+      annotations:
+        vault.hashicorp.com/agent-inject: "true"
+        vault.hashicorp.com/role: "mediawiki"
+        # DB credentials env file
+        vault.hashicorp.com/agent-inject-secret-db.env: "secret/data/mediawiki/mysql"
+        vault.hashicorp.com/agent-inject-template-db.env: |
+          {{`{{- with secret "secret/data/mediawiki/mysql" -}}
+          export MYSQL_DATABASE="{{ .Data.data.database }}"
+          export MYSQL_USER="{{ .Data.data.user }}"
+          export MYSQL_PASSWORD="{{ .Data.data.password }}"
+          {{- end }}`}}
+        # App secrets env file (wgSecretKey, wgUpgradeKey)
+        vault.hashicorp.com/agent-inject-secret-app.env: "secret/data/mediawiki/app"
+        vault.hashicorp.com/agent-inject-template-app.env: |
+          {{`{{- with secret "secret/data/mediawiki/app" -}}
+          export MW_SECRET_KEY="{{ .Data.data.secret_key }}"
+          export MW_UPGRADE_KEY="{{ .Data.data.upgrade_key }}"
+          {{- end }}`}}
     spec:
+      serviceAccountName: mediawiki-sa
       containers:
       - name: php
         image: {{ .Values.php.image }}
         ports:
         - containerPort: {{ .Values.php.port }}
+        # Source both Vault env files then start php-fpm
+        command: ["/bin/sh", "-c"]
+        args:
+          - |
+            . /vault/secrets/db.env
+            . /vault/secrets/app.env
+            exec php-fpm
         env:
         - name: PHP_MEMORY_LIMIT
           value: "{{ .Values.php.memoryLimit }}"
@@ -141,21 +165,6 @@ spec:
           value: "{{ .Values.php.maxExecutionTime }}"
         - name: DB_SERVER
           value: "{{ .Release.Name }}-mysql-service.{{ .Values.namespace }}"
-        - name: MYSQL_DATABASE
-          valueFrom:
-            secretKeyRef:
-              name: {{ .Release.Name }}-mysql-secrets
-              key: mysql-database
-        - name: MYSQL_USER
-          valueFrom:
-            secretKeyRef:
-              name: {{ .Release.Name }}-mysql-secrets
-              key: mysql-user
-        - name: MYSQL_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: {{ .Release.Name }}-mysql-secrets
-              key: mysql-password
         volumeMounts:
         - name: php-fpm-config
           mountPath: /usr/local/etc/php-fpm.d/www.conf
@@ -170,7 +179,7 @@ spec:
             cpu: "250m"
           limits:
             memory: "256Mi"
-            cpu: "500m" 
+            cpu: "500m"
       volumes:
       - name: php-fpm-config
         configMap:
@@ -179,5 +188,5 @@ spec:
         persistentVolumeClaim:
           claimName: {{ .Release.Name }}-php-pvc
       - name: mediawiki-localsettings
-        hostPath: 
+        hostPath:
           path: /vagrant/data/php/mediawiki/LocalSettings.php

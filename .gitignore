@@ -7,4 +7,4 @@ microservices/kubernetes_cluster_app/join.sh
 microservices/kubernetes_cluster_argocd/.vagrant
 microservices/kubernetes_cluster_app/argocd/argocd-linux-amd64
 monolit/lamp/Vagrant/.vagrant
-
+monolit_copy
