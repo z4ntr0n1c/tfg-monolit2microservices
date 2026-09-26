@@ -95,8 +95,8 @@ Project/
    vault namespace       mediawiki namespace      argocd namespace
    ┌──────────────┐    ┌──────────────────────┐   ┌──────────────┐
    │ Vault (dev)  │    │  Apache   PHP   MySQL│   │  ArgoCD      │
-   │ + Injector   │───▶│  (secrets injected   │   │  Server      │
-   │              │    │   by Vault Agent)     │   │              │
+   │ + Injector   │──▶│  (secrets injected   │   │  Server      │
+   │              │    │   by Vault Agent)    │   │              │
    └──────────────┘    └──────────────────────┘   └──────────────┘
 ```
 
