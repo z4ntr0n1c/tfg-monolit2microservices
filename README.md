@@ -3,12 +3,12 @@
 > Sergio Santamaria Bayés
 
 🌐 **Idioma / Language:**
-[🇬🇧 English](#english) · [🇪🇸 Español](#español) · [<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/ce/Flag_of_Catalonia.svg/20px-Flag_of_Catalonia.svg.png" width="16"> Català](#català)
+[🇬🇧 English](#english) · [🇪🇸 Español](#español) · [<img src="assets/flag-cat.png" width="16" alt="Senyera"> Català](#català)
 
 ---
 
 <details open>
-<summary><h2 id="català"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/ce/Flag_of_Catalonia.svg/30px-Flag_of_Catalonia.svg.png" width="24" Català</h2></summary>
+<summary><h2 id="català"><img src="assets/flag-cat.png" width="24" alt="Senyera"> Català</h2></summary>
 
 > **TFG — Migració d'Arquitectura Monolítica a Microserveis**
 >
