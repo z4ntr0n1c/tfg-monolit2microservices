@@ -6,6 +6,8 @@
 
 Migration of a traditional monolithic MediaWiki application to a microservices-based architecture running on Kubernetes, incorporating DevOps/GitOps practices, container orchestration, dynamic scaling, and secrets management with HashiCorp Vault.
 
+OpenAccess UOC Repository: https://openaccess.uoc.edu/items/2834c970-e97c-4f4d-9fd3-c13cbf6cb7b3#page=1
+
 ---
 
 ## Table of Contents
